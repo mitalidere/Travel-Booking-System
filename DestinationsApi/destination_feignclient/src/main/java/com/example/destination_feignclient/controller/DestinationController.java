@@ -20,4 +20,9 @@ public class DestinationController {
     public Destination[] getDestinationsByCountry(@RequestParam String country) {
         return destinationService.getDestinationsForCountry(country);
     }
+
+    @GetMapping("/saveToDatabase")
+    public String saveToDatabase() {
+        return destinationService.saveToDatabase();
+    }
 }

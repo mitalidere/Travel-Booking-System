@@ -11,7 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
@@ -22,6 +25,10 @@ public class CustomerService {
 
     CustomerService(CustomerRepository customerRepository) {
         this.customerRepository=customerRepository;
+    }
+
+    public List<Customer> allCustomers() {
+        return customerRepository.findAll();
     }
 
     public Customer addCustomer(String name, int age, String destination, LocalDate date, MultipartFile document) throws Exception {
@@ -40,10 +47,10 @@ public class CustomerService {
     }
 
     public String databaseToCsv() {
-        File file=new File("C:/Users/DELL/IdeaProjects/Travel Booking System/TravelBookingRecord.csv");
+        File file=new File("C:/Users/DELL/IdeaProjects/Assessment/Travel Booking System/TravelBookingRecord.csv");
         List<Customer> customerList=customerRepository.findAll();
 
-        try(FileWriter fw=new FileWriter(file)) {
+        try(FileWriter fw=new FileWriter(file, true)) {
             if(file.length()==0) {
                 fw.append("ID, NAME, AGE, DESTINATION, DATE, DOCUMENT\n");
             }
@@ -80,4 +87,52 @@ public class CustomerService {
         }
         return "CSV exported to Database";
     }
+
+    public List<Customer> filterCustomerByDate(LocalDate date) {
+        List<Customer> customers = allCustomers();
+
+        Function<LocalDate, List<Customer>> filterByDate = filterDate ->
+                customers.stream()
+                        .filter(customer -> Optional.ofNullable(customer.getDate())
+                                .map(travelDate -> travelDate.equals(filterDate))
+                                .orElse(false))
+                        .toList();
+
+        return Optional.ofNullable(date)
+                .map(filterByDate)
+                .orElse(List.of());
+    }
+
+    public List<Customer> filterCustomerByDestination(String destination) {
+        List<Customer> customers = allCustomers();
+
+        Function<String, List<Customer>> filterByDestination = filterDest ->
+                customers.stream()
+                        .filter(customer -> Optional.ofNullable(customer.getDestination())
+                                .map(dest -> dest.equalsIgnoreCase(filterDest))
+                                .orElse(false))
+                        .toList();
+
+        return Optional.ofNullable(destination)
+                .map(filterByDestination)
+                .orElse(List.of());
+    }
+
+    public List<Customer> filterCustomerByName(String name) {
+        List<Customer> customers = allCustomers();
+
+        Function<String, List<Customer>> filterByName = filterName ->
+                customers.stream()
+                        .filter(customer -> Optional.ofNullable(customer.getName())
+                                .map(customerName -> customerName.equalsIgnoreCase(filterName))
+                                .orElse(false))
+                        .toList();
+
+        return Optional.ofNullable(name)
+                .map(filterByName)
+                .orElse(List.of());
+    }
+
+
+
 }

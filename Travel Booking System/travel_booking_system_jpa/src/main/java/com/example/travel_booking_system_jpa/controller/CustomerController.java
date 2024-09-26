@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/customer")
@@ -14,6 +16,11 @@ public class CustomerController {
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+    }
+
+    @GetMapping
+    public List<Customer> allCustomers() {
+        return customerService.allCustomers();
     }
 
     @PostMapping
@@ -33,5 +40,20 @@ public class CustomerController {
     @GetMapping("/csvToDatabase")
     public String csvToDatabase() {
         return customerService.csvToDatabase();
+    }
+
+    @GetMapping("/filterByDate")
+    public List<Customer> filterCustomerByDate(@RequestParam LocalDate date) {
+        return customerService.filterCustomerByDate(date);
+    }
+
+    @GetMapping("/filterByDestination")
+    public List<Customer> filterCustomerByDestination(@RequestParam String destination) {
+        return customerService.filterCustomerByDestination(destination);
+    }
+
+    @GetMapping("/filterByName")
+    public List<Customer> filterCustomerByName(@RequestParam String name) {
+        return customerService.filterCustomerByName(name);
     }
 }
