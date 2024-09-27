@@ -5,6 +5,7 @@ import com.example.travel_booking_system_jpa.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,21 @@ public class CustomerController {
                                 @RequestParam LocalDate date,
                                 @RequestParam MultipartFile document) throws Exception {
         return customerService.addCustomer(name, age, destination, date, document);
+    }
+
+    @PutMapping
+    public Customer updateCustomer(@RequestParam int id,
+                                   @RequestParam String name,
+                                   @RequestParam int age,
+                                   @RequestParam String destination,
+                                   @RequestParam LocalDate date,
+                                   @RequestParam MultipartFile document) throws IOException {
+        return customerService.updateCustomer(id, name, age, destination, date, document);
+    }
+
+    @DeleteMapping
+    public String deleteCustomer(@RequestParam int id) {
+        return customerService.deleteCustomer(id);
     }
 
     @GetMapping("/databaseToCsv")

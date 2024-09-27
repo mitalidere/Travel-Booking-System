@@ -9,14 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
@@ -46,6 +43,27 @@ public class CustomerService {
         customer.setDocumentPath(filePath.toString());
 
         return customerRepository.save(customer);
+    }
+
+    public Customer updateCustomer(int id, String name, int age, String destination, LocalDate date, MultipartFile document) throws IOException {
+        Customer customer=new Customer();
+        customer.setId(id);
+        customer.setName(name);
+        customer.setAge(age);
+        customer.setDestination(destination);
+        customer.setDate(date);
+
+        String fileName= UUID.randomUUID()+"_"+document.getOriginalFilename();
+        Path filePath= Paths.get(uploadDir+fileName);
+        document.transferTo(filePath);
+        customer.setDocumentPath(filePath.toString());
+
+        return customerRepository.save(customer);
+    }
+
+    public String deleteCustomer(int id) {
+        customerRepository.deleteById(id);
+        return "Customer deleted";
     }
 
     public String databaseToCsv(String fileName) {
@@ -133,7 +151,4 @@ public class CustomerService {
                 .map(filterByName)
                 .orElse(List.of());
     }
-
-
-
 }
