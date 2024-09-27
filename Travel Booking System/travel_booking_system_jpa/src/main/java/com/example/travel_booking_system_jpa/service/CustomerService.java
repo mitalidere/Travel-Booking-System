@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,8 +48,8 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public String databaseToCsv() {
-        File file=new File("C:/Users/DELL/IdeaProjects/Assessment/Travel Booking System/TravelBookingRecord.csv");
+    public String databaseToCsv(String fileName) {
+        File file=new File("C:/Users/DELL/IdeaProjects/Assessment/Travel Booking System/"+fileName+".csv");
         List<Customer> customerList=customerRepository.findAll();
 
         try(FileWriter fw=new FileWriter(file, true)) {
@@ -64,8 +66,8 @@ public class CustomerService {
         return "Database exported to CSV";
     }
 
-    public String csvToDatabase() {
-        File file=new File("C:/Users/DELL/IdeaProjects/Travel Booking System/TravelBookingRecord.csv");
+    public String csvToDatabase(String fileName) {
+        File file=new File("C:/Users/DELL/IdeaProjects/Assessment/Travel Booking System/"+fileName+".csv");
         try(BufferedReader br=new BufferedReader(new FileReader(file))) {
             String line;
             br.readLine();
@@ -78,7 +80,6 @@ public class CustomerService {
                 customer.setDestination(customerArray[3]);
                 customer.setDate(LocalDate.parse(customerArray[4]));
                 customer.setDocumentPath(customerArray[5]);
-
                 customerRepository.save(customer);
             }
         }

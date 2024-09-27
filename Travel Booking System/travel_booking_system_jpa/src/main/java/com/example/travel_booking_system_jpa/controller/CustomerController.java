@@ -33,13 +33,13 @@ public class CustomerController {
     }
 
     @GetMapping("/databaseToCsv")
-    public String databaseToCSV() {
-        return customerService.databaseToCsv();
+    public String databaseToCSV(@RequestParam String fileName) {
+        return customerService.databaseToCsv(fileName);
     }
 
     @GetMapping("/csvToDatabase")
-    public String csvToDatabase() {
-        return customerService.csvToDatabase();
+    public String csvToDatabase(@RequestParam String fileName) {
+        return customerService.csvToDatabase(fileName);
     }
 
     @GetMapping("/filterByDate")

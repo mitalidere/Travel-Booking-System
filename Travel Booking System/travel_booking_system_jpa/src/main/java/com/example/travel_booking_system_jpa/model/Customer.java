@@ -17,10 +17,10 @@ import java.time.LocalDate;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-    String name;
-    int age;
-    String destination;
-    String documentPath;
-    LocalDate date;
+    private int id;
+    private String name;
+    private int age;
+    private String destination;
+    private String documentPath;
+    private LocalDate date;
 }
