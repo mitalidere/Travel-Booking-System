@@ -1,5 +1,6 @@
 package com.example.destination_feignclient.service;
 
+import com.example.destination_feignclient.exception.RecordNotFoundException;
 import com.example.destination_feignclient.interfaces.DestinationClient;
 import com.example.destination_feignclient.model.Destination;
 import com.example.destination_feignclient.repository.DestinationRepository;
@@ -21,8 +22,11 @@ public class DestinationService {
 
     public Destination[] getDestinationsForCountry(String country) {
         Destination [] destinations=destinationClient.getDestinationsByCountry(country);
-        List<Destination> destinationList=Arrays.stream(destinations).filter(destination -> destination.getCountry().equalsIgnoreCase(country)).collect(Collectors.toList());
-        return destinationList.toArray(new Destination[0]);
+        List<Destination> destinationList= Arrays.stream(destinations).filter(destination -> destination.getCountry().equalsIgnoreCase(country)).toList();
+        if(!destinationList.isEmpty()) {
+            return destinationList.toArray(new Destination[0]);
+        }
+        throw new RecordNotFoundException("Record not found");
     }
 
     public String saveToDatabase() {

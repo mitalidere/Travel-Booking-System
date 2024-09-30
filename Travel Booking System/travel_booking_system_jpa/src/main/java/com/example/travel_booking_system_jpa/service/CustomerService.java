@@ -1,5 +1,7 @@
 package com.example.travel_booking_system_jpa.service;
 
+import com.example.travel_booking_system_jpa.exception.FileConversionException;
+import com.example.travel_booking_system_jpa.exception.RecordNotFoundException;
 import com.example.travel_booking_system_jpa.model.Customer;
 import com.example.travel_booking_system_jpa.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,7 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer addCustomer(String name, int age, String destination, LocalDate date, MultipartFile document) throws Exception {
+    public Customer addCustomer(String name, int age, String destination, LocalDate date, MultipartFile document) throws IOException {
         Customer customer=new Customer();
         customer.setName(name);
         customer.setAge(age);
@@ -46,24 +48,30 @@ public class CustomerService {
     }
 
     public Customer updateCustomer(int id, String name, int age, String destination, LocalDate date, MultipartFile document) throws IOException {
-        Customer customer=new Customer();
-        customer.setId(id);
-        customer.setName(name);
-        customer.setAge(age);
-        customer.setDestination(destination);
-        customer.setDate(date);
+        if(customerRepository.findById(id).isPresent()) {
+            Customer customer = new Customer();
+            customer.setId(id);
+            customer.setName(name);
+            customer.setAge(age);
+            customer.setDestination(destination);
+            customer.setDate(date);
 
-        String fileName= UUID.randomUUID()+"_"+document.getOriginalFilename();
-        Path filePath= Paths.get(uploadDir+fileName);
-        document.transferTo(filePath);
-        customer.setDocumentPath(filePath.toString());
+            String fileName = UUID.randomUUID() + "_" + document.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir + fileName);
+            document.transferTo(filePath);
+            customer.setDocumentPath(filePath.toString());
 
-        return customerRepository.save(customer);
+            return customerRepository.save(customer);
+        }
+        throw new RecordNotFoundException("Customer not found with id "+id);
     }
 
     public String deleteCustomer(int id) {
-        customerRepository.deleteById(id);
-        return "Customer deleted";
+        if(customerRepository.findById(id).isPresent()) {
+            customerRepository.deleteById(id);
+            return "Customer deleted";
+        }
+        throw new RecordNotFoundException("Customer not found with id "+id);
     }
 
     public String databaseToCsv(String fileName) {
@@ -75,11 +83,11 @@ public class CustomerService {
                 fw.append("ID, NAME, AGE, DESTINATION, DATE, DOCUMENT\n");
             }
             for(Customer customer:customerList) {
-                fw.append(customer.getId()+","+customer.getName()+","+customer.getAge()+","+customer.getDestination()+","+customer.getDate()+","+customer.getDocumentPath()+"\n");
+                fw.append(String.valueOf(customer.getId())).append(",").append(customer.getName()).append(",").append(String.valueOf(customer.getAge())).append(",").append(customer.getDestination()).append(",").append(String.valueOf(customer.getDate())).append(",").append(customer.getDocumentPath()).append("\n");
             }
         }
         catch (Exception e) {
-            throw new RuntimeException("Database not exported to CSV");
+            throw new FileConversionException("Database not exported to CSV");
         }
         return "Database exported to CSV";
     }
@@ -102,7 +110,7 @@ public class CustomerService {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException("CSV not exported to database");
+            throw new FileConversionException("CSV not exported to database");
         }
         return "CSV exported to Database";
     }
@@ -119,8 +127,10 @@ public class CustomerService {
 
         return Optional.ofNullable(date)
                 .map(filterByDate)
-                .orElse(List.of());
+                .filter(filteredCustomers -> !filteredCustomers.isEmpty())
+                .orElseThrow(() -> new RecordNotFoundException("No customers found for date "+date));
     }
+
 
     public List<Customer> filterCustomerByDestination(String destination) {
         List<Customer> customers = allCustomers();
@@ -134,7 +144,8 @@ public class CustomerService {
 
         return Optional.ofNullable(destination)
                 .map(filterByDestination)
-                .orElse(List.of());
+                .filter(filteredCustomers -> !filteredCustomers.isEmpty())
+                .orElseThrow(() -> new RecordNotFoundException("No customers found for destination "+destination));
     }
 
     public List<Customer> filterCustomerByName(String name) {
@@ -149,6 +160,7 @@ public class CustomerService {
 
         return Optional.ofNullable(name)
                 .map(filterByName)
-                .orElse(List.of());
+                .filter(filteredCustomers -> !filteredCustomers.isEmpty())
+                .orElseThrow(() -> new RecordNotFoundException("No customers found for name "+name));
     }
 }
