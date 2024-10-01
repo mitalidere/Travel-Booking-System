@@ -1,5 +1,6 @@
 package com.example.destination_feignclient.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Transient;
@@ -18,26 +19,40 @@ public class Destination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private  String name;
+
     private String country;
+
     private String continent;
 
     @Transient
     private String description;
+
     @Transient
     private String image;
+
     @Transient
     private String population;
+
     @Transient
     private String currency;
+
     @Transient
     private String language;
+
     @Transient
-    private String best_time_to_visit;
+    @JsonProperty("best_time_to_visit")
+    private String bestTimeToVisit;
+
     @Transient
-    private String [] top_attractions;
+    @JsonProperty("top_attractions")
+    private String [] topAttractions;
+
     @Transient
-    private String [] local_dishes;
+    @JsonProperty("local_dishes")
+    private String [] localDishes;
+
     @Transient
     private String [] activities;
 }
