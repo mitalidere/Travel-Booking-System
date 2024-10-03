@@ -21,6 +21,7 @@ public class Customer {
     private String name;
     private int age;
     private String destination;
-    private String documentPath;
     private LocalDate date;
+    private String email;
+    private String documentPath;
 }

@@ -32,12 +32,13 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer addCustomer(String name, int age, String destination, LocalDate date, MultipartFile document) throws IOException {
+    public Customer addCustomer(String name, int age, String destination, LocalDate date, String email, MultipartFile document) throws IOException {
         Customer customer=new Customer();
         customer.setName(name);
         customer.setAge(age);
         customer.setDestination(destination);
         customer.setDate(date);
+        customer.setEmail(email);
 
         String fileName= UUID.randomUUID()+"_"+document.getOriginalFilename();
         Path filePath= Paths.get(uploadDir+fileName);
@@ -47,7 +48,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public Customer updateCustomer(int id, String name, int age, String destination, LocalDate date, MultipartFile document) throws IOException {
+    public Customer updateCustomer(int id, String name, int age, String destination, LocalDate date,String email, MultipartFile document) throws IOException {
         if(customerRepository.findById(id).isPresent()) {
             Customer customer = new Customer();
             customer.setId(id);
@@ -55,6 +56,7 @@ public class CustomerService {
             customer.setAge(age);
             customer.setDestination(destination);
             customer.setDate(date);
+            customer.setEmail(email);
 
             String fileName = UUID.randomUUID() + "_" + document.getOriginalFilename();
             Path filePath = Paths.get(uploadDir + fileName);

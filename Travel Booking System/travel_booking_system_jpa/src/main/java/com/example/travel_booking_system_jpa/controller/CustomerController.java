@@ -1,11 +1,8 @@
 package com.example.travel_booking_system_jpa.controller;
 
 import com.example.travel_booking_system_jpa.exception.CustomerException;
-import com.example.travel_booking_system_jpa.exception.RecordNotFoundException;
 import com.example.travel_booking_system_jpa.model.Customer;
 import com.example.travel_booking_system_jpa.service.CustomerService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,9 +29,10 @@ public class CustomerController {
                                 @RequestParam int age,
                                 @RequestParam String destination,
                                 @RequestParam LocalDate date,
+                                @RequestParam String email,
                                 @RequestParam MultipartFile document) {
         try {
-            return customerService.addCustomer(name, age, destination, date, document);
+            return customerService.addCustomer(name, age, destination, date, email, document);
         }
         catch (IOException e) {
             throw new CustomerException("Customer not added");
@@ -47,9 +45,10 @@ public class CustomerController {
                                    @RequestParam int age,
                                    @RequestParam String destination,
                                    @RequestParam LocalDate date,
+                                   @RequestParam String email,
                                    @RequestParam MultipartFile document) {
         try {
-            return customerService.updateCustomer(id, name, age, destination, date, document);
+            return customerService.updateCustomer(id, name, age, destination, date, email, document);
         }
         catch (IOException e) {
             throw new CustomerException("Customer not updated");
